@@ -47,7 +47,7 @@ function render(){
   const outputImageData = cloneImageData(skinImageData);
   
   // currently, only torso is done for testing
-  blit(outputPixels, trimmedArmorImageData, {
+  blit(outputImageData, trimmedArmorImageData, {
     sx: TORSO_REGION.x,
     sy: TORSO_REGION.y,
     sw: TORSO_REGION.width,

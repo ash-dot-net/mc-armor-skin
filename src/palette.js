@@ -34,6 +34,6 @@ export function paletteSwap(sourceImageData, paletteMap){
   }
   if(misses){
     console.warn(`palette swap: ${misses} unmatched pixels`);
-    return outImageData;
   }
+  return outImageData;
 }

@@ -39,7 +39,7 @@ export function getPixel(image, x, y){
 export function blit(destination, source, {
   sx = 0, sy = 0, sw = source.width, sh = source.height,
   dx = 0, dy = 0, flipX = false
-}){
+} = {}){
   for(let y = 0; y < sh; y++){
     for(let x = 0; x < sw; x++){
       const sourceX = flipX ? sx + sw - x : sx + x;
