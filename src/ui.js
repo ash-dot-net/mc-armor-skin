@@ -1,6 +1,6 @@
 // this builds the settings controls from the catalog and holds the settings state.
 
-import all, { ARMOR_PIECES, materialsForPiece, TRIM_MATERIALS, TRIM_PATTERNS } from './catalog.js';
+import { ARMOR_PIECES, materialsForPiece, TRIM_MATERIALS, TRIM_PATTERNS } from './catalog.js';
 
 // the shape of settings:
 // {
@@ -183,6 +183,8 @@ export function buildSettingsUI(containerElement, onChange){
   for(const piece of ARMOR_PIECES){
     containerElement.append(buildPieceControls(piece));
   }
+
+  return settings;
 }
 
 export function getSettings(){

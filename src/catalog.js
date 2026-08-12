@@ -72,7 +72,7 @@ export const TRIM_MATERIALS = [
 // returns all valid materials for a given armor slot
 export function materialsForPiece(pieceId){
   return ARMOR_MATERIALS.filter(
-    material => !material.pieces || material.pieces.includes(pieceID)
+    material => !material.pieces || material.pieces.includes(pieceId)
   );
 }
 
@@ -91,13 +91,13 @@ export function armorTextureUrl(pieceId, materialId){
 // returns the trim texture path for a specified piece and trim
 export function trimTextureUrl(pieceId, patternId){
   const piece = ARMOR_PIECES.find(candidate => candidate.id === pieceId);
-  const directory = piece.layer === 'legs' ? LEG_ARMOR_DIR : ARMOR_DIR;
+  const directory = piece.layer === 'legs' ? LEG_TRIM_DIR : TRIM_DIR;
   return `${directory}/${patternId}.png`;
 }
 
 // returns the trim palette texture path for a specified base material and trim material
-export function paletteTextureUrl(materialId, trimMaterialId){
+export function paletteTextureUrl(trimMaterialId, materialId){
   const darker = materialId === trimMaterialId;
   const suffix = darker ? '_darker' : '';
-  return `palettes/${trimMaterialId}${suffix}.png`;
+  return `${PALETTE_DIR}/${trimMaterialId}${suffix}.png`;
 }

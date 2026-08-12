@@ -42,7 +42,7 @@ export function blit(destination, source, {
 } = {}){
   for(let y = 0; y < sh; y++){
     for(let x = 0; x < sw; x++){
-      const sourceX = flipX ? sx + sw - x : sx + x;
+      const sourceX = flipX ? sx + sw - x - 1 : sx + x;
       const sourceIndex = ((sy + y) * source.width + sourceX) * 4;
       if(source.data[sourceIndex + 3] === 0){
         continue;

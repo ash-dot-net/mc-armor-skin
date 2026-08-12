@@ -2,13 +2,30 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Armorizer!</title>
     <link rel="stylesheet" href="style.css">
   </head>
   <body>
     <h1>Skin Armorizer!</h1>
-    <input type="file" id="skin-input" accept="image/png">
-    <canvas id="out" width="64" height="64"></canvas>
+    <div class="layout">
+      <!-- Settings -->
+      <section class="panel">
+        <label class="control">
+          Skin file
+          <input type="file" id="skin-input" accept="image/png">
+        </label>
+        <div id="controls">
+          <!-- filled in by ui.js -->
+        </div>
+      </section>
+      <!-- Output -->
+      <section class="panel">
+        <canvas id="out" width="64" height="64"></canvas>
+        <button id="download-button" type="button">Download skin</button>
+      </section>
+    </div>
+
     <script src="vendor/skinview3d.bundle.js"></script>
     <script type="module" src="src/main.js"></script>
   </body>

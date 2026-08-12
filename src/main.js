@@ -143,6 +143,18 @@ document.getElementById('skin-input').addEventListener('change', async (e) => {
   if(skinImageData.width != SKIN_WIDTH || skinImageData.height != SKIN_HEIGHT){
     console.warn(`expected a ${SKIN_WIDTH}x${SKIN_HEIGHT} skin, got a ${skinImageData.width}x${skinImageData.height}.`);
   }
+  
+  render(settings);
+});
 
-  render();
+// Exports the current canvas as a PNG
+document.getElementById('download-button').addEventListener('click', () => {
+  outputCanvas.toBlob(blob => {
+    const objectUrl = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = objectUrl;
+    link.download = 'armorized-skin.png'; // TODO: include the name of the skin in this
+    link.click();
+    URL.revokeObjectURL(objectUrl);
+  }, 'image/png');
 });
