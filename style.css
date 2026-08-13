@@ -31,8 +31,8 @@ nothing fancy, just
   --line: color-mix(in oklab, var(--background) 74%, var(--text));
   --muted: color-mix(in oklab, var(--text) 58%, var(--background));
  
-  --font-body: "Segoe UI", Roboto, sans-serif;
-  --font-mono: "Cascadia Mono", Menlo, Consolas, monospace;
+  --font-body: "Poppins", "Segoe UI", Roboto, sans-serif;
+  --font-mono: "Ubuntu Mono", "Cascadia Mono", Menlo, Consolas, monospace;
  
   --step: 0.5rem;
   --radius: 3px;
@@ -56,7 +56,7 @@ body {
   background: var(--background);
   color: var(--text);
   font-family: var(--font-body);
-  font-size: 15px;
+  font-size: 16px;
   line-height: 1.5;
 }
 
@@ -74,16 +74,14 @@ body {
 h1 {
   margin: 0;
   font-family: var(--font-mono);
-  font-size: 0.95rem;
+  font-size: 2rem;
   font-weight: 600;
-  letter-spacing: 0.26em;
-  text-transform: uppercase;
 }
  
 .tagline {
   margin: 0;
   color: var(--muted);
-  font-size: 0.8rem;
+  font-size: 1rem;
 }
  
 /* layout */
@@ -115,9 +113,8 @@ h1 {
   margin: 0;
   color: var(--muted);
   font-family: var(--font-mono);
-  font-size: 0.7rem;
+  font-size: 1rem;
   font-weight: 500;
-  letter-spacing: 0.18em;
   text-transform: uppercase;
 }
  
@@ -134,7 +131,7 @@ fieldset {
 legend {
   padding: 0 var(--step);
   font-family: var(--font-mono);
-  font-size: 0.75rem;
+  font-size: 1rem;
   font-weight: 600;
   letter-spacing: 0.08em;
 }
@@ -167,16 +164,14 @@ legend {
   min-width: 0;
   color: var(--muted);
   font-family: var(--font-mono);
-  font-size: 0.7rem;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
+  font-size: 0.75rem;
 }
  
 select,
 input[type="file"],
 button {
   font-family: var(--font-mono);
-  font-size: 0.78rem;
+  font-size: 0.75rem;
   letter-spacing: 0;
   text-transform: none;
   color: var(--text);
@@ -299,7 +294,6 @@ button {
   background: var(--primary);
   border-color: var(--primary);
   font-weight: 600;
-  letter-spacing: 0.04em;
 }
  
 button:hover {
@@ -311,10 +305,8 @@ button:hover {
   color: var(--muted);
   background: transparent;
   border-color: var(--line);
-  font-size: 0.7rem;
+  font-size: 0.75rem;
   font-weight: 500;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
 }
  
 .theme-toggle:hover {
