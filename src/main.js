@@ -1,38 +1,68 @@
 import { loadImage, toImageData, cloneImageData, blit } from './image.js';
 import { buildPaletteMap, paletteSwap } from './palette.js';
 import { buildSettingsUI } from './ui.js';
-import { ARMOR_PIECES, KEY_PALETTE_URL, armorTextureUrl, trimTextureUrl, paletteTextureUrl } from './catalog.js';
+import { KEY_PALETTE_URL, armorTextureUrl, trimTextureUrl, paletteTextureUrl, ARMOR_PIECES_IN_DRAW_ORDER } from './catalog.js';
+import { blitLimb } from './uv.js';
 
 const SKIN_WIDTH = 64;
 const SKIN_HEIGHT = 64;
 
-// test torso region. is identical in armor and skin layout
-const TORSO_REGION = {x: 16, y: 16, width: 24, height: 16};
-
-// Texture regions, in skin-texture coordinates. mirror regions are not handled yet.
-const REGIONS = {
+// where each body part lives
+const PART_REGIONS = {
   head: {
-    x: 0, y: 0, width: 32, height: 16
+    kind: 'box',
+    source: {x: 0, y: 0},
+    base: {x: 0, y: 0}, 
+    overlay: {x: 32, y: 0},
+    width: 32, 
+    height: 16
   },
   torso: {
-    x: 16, y: 16, width: 24, height: 16
+    kind: 'box',
+    source: {x: 16, y: 16},
+    base: {x: 16, y: 16},
+    overlay: {x: 16, y: 32},
+    width: 24, 
+    height: 16
   },
   rightArm: {
-    x: 40, y: 16, width: 16, height: 16
+    kind: 'arm',
+    source: {x: 40, y: 16},
+    base: {x: 40, y: 16},
+    overlay: {x: 40, y: 32}
+  },
+  leftArm: {
+    kind: 'arm',
+    source: {x: 40, y: 16},
+    base: {x: 32, y: 48},
+    overlay: {x: 48, y: 48},
+    mirror: true
   },
   rightLeg: {
-    x: 0, y: 16, width: 16, height: 16
+    kind: 'leg',
+    source: {x: 0, y: 16},
+    base: {x: 0, y: 16},
+    overlay: {x: 0, y: 32}
+  },
+  leftLeg: {
+    kind: 'leg',
+    source: {x: 0, y: 16},
+    base: {x: 16, y: 48},
+    overlay: {x: 0, y: 48},
+    mirror: true
   }
-  // todo: leftarm and leftleg
-}
-
-// which regions are contained by each piece
-const PIECE_REGIONS = {
-  helmet: ['head'],
-  chestplate: ['torso', 'rightArm'],
-  leggings: ['torso', 'rightLeg'],
-  boots: ['rightLeg']
 };
+
+// which body parts are used by each piece
+const PIECE_PARTS = {
+  helmet: ['head'],
+  chestplate: ['torso', 'rightArm', 'leftArm'],
+  leggings: ['torso', 'rightLeg', 'leftLeg'],
+  boots: ['rightLeg', 'leftLeg']
+};
+
+// TODO: set to 'overlay' once outer-layer handling is working
+const TARGET_LAYER = 'base'
 
 // canvas setup
 const outputCanvas = document.getElementById('out');
@@ -40,6 +70,7 @@ const outputContext = outputCanvas.getContext('2d', { willReadFrequently: true})
 outputContext.imageSmoothingEnabled = false;
 
 let skinImageData = null;
+
 // decoded textures, keyed by url. prevents all pngs from being re-fetched on a settings change
 const textureCache = new Map();
 
@@ -76,6 +107,38 @@ async function buildPieceTexture(pieceId, pieceSettings){
   return trimmedArmorImageData;
 }
 
+// paints one body part of a piece's texture onto the output skin
+function paintPart(destination, pieceTexture, partName, settings){
+  const part = PART_REGIONS[partName];
+  const destinationOrigin = part[TARGET_LAYER];
+
+  if(part.kind === 'box'){
+    blit(
+      destination,
+      pieceTexture, {
+        sx: part.source.x,
+        sy: part.source.y,
+        sw: part.width,
+        sh: part.height,
+        dx: destinationOrigin.x,
+        dy: destinationOrigin.y
+      }
+    );
+  }
+  else{
+    blitLimb(
+      destination,
+      pieceTexture, {
+        sourceOrigin: part.source,
+        destinationOrigin: destinationOrigin,
+        mirror: Boolean(part.mirror),
+        alex: part.kind === 'arm' && settings.model === 'alex',
+        dropColumn: settings.alexDropColumn
+      }
+    );
+  }
+}
+
 // Incremented on every render. Prevents race conditions from quickly flipping two options.
 let currentRenderToken = 0;
 
@@ -86,40 +149,32 @@ async function render(settings){
     return;
   }
 
+  const enabledPieces = ARMOR_PIECES_IN_DRAW_ORDER.filter(
+    piece => settings.pieces[piece.id].enabled
+  );
+
+  const pieceTextures = await Promise.all(
+    enabledPieces.map(piece => 
+      buildPieceTexture(piece.id, settings.pieces[piece.id]).catch(error => {
+        console.error(`skipping ${piece.id}: `, error.message);
+        return null;
+      })
+    )
+  );
+
+  if(renderToken !== currentRenderToken) return;
   const outputImageData = cloneImageData(skinImageData);
-  
-  for(const piece of ARMOR_PIECES){
-    const pieceSettings = settings.pieces[piece.id];
-    if(!pieceSettings.enabled){
+  for(let i = 0; i < enabledPieces.length; i++){
+    const pieceTexture = pieceTextures[i];
+    if(!pieceTexture){
       continue;
     }
 
-    let pieceTexture;
-    try {
-      pieceTexture = await buildPieceTexture(piece.id, pieceSettings);
-    }
-    catch (error) {
-      // plenty of expected errors, including catalog/asset mismatch, not necessarily fatal
-      // can still render the rest of the output
-      console.error(`skipping ${piece.id}: `, error.message);
-      continue;
-    }
-
-    if(renderToken !== currentRenderToken) return;
-
-    for(const regionName of PIECE_REGIONS[piece.id]){
-      const region = REGIONS[regionName];
-      blit(outputImageData, pieceTexture, {
-        sx: region.x,
-        sy: region.y,
-        sw: region.width,
-        sh: region.height,
-        dx: region.x,
-        dy: region.y
-      });
+    for(const partName of PIECE_PARTS[enabledPieces[i].id]){
+      paintPart(outputImageData, pieceTexture, partName, settings);
     }
   }
-
+  
   if(renderToken !== currentRenderToken) return;
   outputContext.putImageData(outputImageData, 0, 0);
 }
@@ -143,7 +198,7 @@ document.getElementById('skin-input').addEventListener('change', async (e) => {
   if(skinImageData.width != SKIN_WIDTH || skinImageData.height != SKIN_HEIGHT){
     console.warn(`expected a ${SKIN_WIDTH}x${SKIN_HEIGHT} skin, got a ${skinImageData.width}x${skinImageData.height}.`);
   }
-  
+
   render(settings);
 });
 

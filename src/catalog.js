@@ -14,11 +14,13 @@ const PALETTE_DIR = 'assets/palettes';
 
 // armor slots
 export const ARMOR_PIECES = [
-  {id: 'helmet', label: 'Helmet', layer: 'main'},
-  {id: 'chestplate', label: 'Chestplate', layer: 'main'},
-  {id: 'leggings', label: 'Leggings', layer: 'legs'},
-  {id: 'boots', label: 'Boots', layer: 'main'}
+  {id: 'helmet', label: 'Helmet', layer: 'main', drawOrder: 1},
+  {id: 'chestplate', label: 'Chestplate', layer: 'main', drawOrder: 2},
+  {id: 'leggings', label: 'Leggings', layer: 'legs', drawOrder: 0},
+  {id: 'boots', label: 'Boots', layer: 'main', drawOrder: 3}
 ];
+
+export const ARMOR_PIECES_IN_DRAW_ORDER = [...ARMOR_PIECES].sort((a, b) => a.drawOrder - b.drawOrder);
 
 // armor materials, including restrictions to only being available in specific slots
 export const ARMOR_MATERIALS = [

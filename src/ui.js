@@ -4,7 +4,7 @@ import { ARMOR_PIECES, materialsForPiece, TRIM_MATERIALS, TRIM_PATTERNS } from '
 
 // the shape of settings:
 // {
-//   model: 'classic' | 'slim',
+//   model: 'steve' | 'alex',
 //   slimDropColumn: 0 | 1 | 2 | 3,
 //   pieces: {
 //     helmet: {
@@ -14,8 +14,8 @@ import { ARMOR_PIECES, materialsForPiece, TRIM_MATERIALS, TRIM_PATTERNS } from '
 //   }
 // }
 const settings = {
-  model: 'classic',
-  slimDropColumn: 0, // TODO: experiment to find the best default
+  model: 'steve',
+  alexDropColumn: 0, // TODO: experiment to find the best default
   pieces: {}
 };
 
@@ -151,9 +151,9 @@ function buildModelControls(){
   const columnControl = createLabeledSelect(
     'Slim / Alex: drop column',
     columnOptions,
-    String(settings.slimDropColumn),
+    String(settings.alexDropColumn),
     value => {
-      settings.slimDropColumn = Number(value);
+      settings.alexDropColumn = Number(value);
     }
   );
 
