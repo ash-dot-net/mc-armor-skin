@@ -19,10 +19,19 @@
           <!-- filled in by ui.js -->
         </div>
       </section>
-      <!-- Output -->
+      <!-- Output texture -->
       <section class="panel">
         <canvas id="out" width="64" height="64"></canvas>
         <button id="download-button" type="button">Download skin</button>
+      </section>
+      <!-- 3d preview -->
+      <section class="panel">
+        <canvas id="preview"></canvas>
+        <fieldset class="preview-controls">
+          <legend>Preview</legend>
+          <label><input type="checkbox", id="elytra-toggle"> Elytra</label>
+          <label><input type="checkbox", id="outer-layer-toggle"> Show skin's outer layer</label>
+        </fieldset>
       </section>
     </div>
 

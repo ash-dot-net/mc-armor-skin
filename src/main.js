@@ -3,6 +3,16 @@ import { buildPaletteMap, paletteSwap } from './palette.js';
 import { buildSettingsUI } from './ui.js';
 import { KEY_PALETTE_URL, armorTextureUrl, trimTextureUrl, paletteTextureUrl, ARMOR_PIECES_IN_DRAW_ORDER } from './catalog.js';
 import { blitLimb } from './uv.js';
+import { initPreview, updatePreview, setElytra } from './preview.js';
+
+const ELYTRA_TEXTURE_URL = 'assets/misc/elytra.png';
+
+const previewOptions = {
+  showOuterLayer: false,
+  elytra: false
+}
+
+initPreview(document.getElementById('preview'));
 
 const SKIN_WIDTH = 64;
 const SKIN_HEIGHT = 64;
@@ -177,6 +187,13 @@ async function render(settings){
   
   if(renderToken !== currentRenderToken) return;
   outputContext.putImageData(outputImageData, 0, 0);
+
+  updatePreview(
+    outputCanvas, {
+      model: settings.model,
+      showOuterLayer: previewOptions.showOuterLayer
+    }
+  )
 }
 
 // wiring
@@ -212,4 +229,14 @@ document.getElementById('download-button').addEventListener('click', () => {
     link.click();
     URL.revokeObjectURL(objectUrl);
   }, 'image/png');
+});
+
+document.getElementById('outer-layer-toggle').addEventListener('change', (e) => {
+  previewOptions.showOuterLayer = e.target.checked;
+  render(settings);
+});
+
+document.getElementById('elytra-toggle').addEventListener('change', (e) => {
+  previewOptions.elytra = e.target.checked;
+  setElytra(previewOptions.elytra ? ELYTRA_TEXTURE_URL : null);
 });
