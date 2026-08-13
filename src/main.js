@@ -8,7 +8,7 @@ import { initPreview, updatePreview, setElytra } from './preview.js';
 const ELYTRA_TEXTURE_URL = 'assets/misc/elytra.png';
 
 const previewOptions = {
-  showOuterLayer: false,
+  showOuterLayer: true,
   elytra: false
 }
 
@@ -71,8 +71,7 @@ const PIECE_PARTS = {
   boots: ['rightLeg', 'leftLeg']
 };
 
-// TODO: set to 'overlay' once outer-layer handling is working
-const TARGET_LAYER = 'base'
+const TARGET_LAYER = 'overlay'
 
 // canvas setup
 const outputCanvas = document.getElementById('out');
